@@ -37,7 +37,7 @@ def entropy(my_data_frame):
 
     classes = my_data_frame.keys()[-1] # last column in data set contains classes
     possible_values = my_data_frame[classes].unique() # here: 1 - divorced, 0 - married
-    print(possible_values)
+    #print(possible_values)
 
     #podrecznik str 76:
     #I(S) = - sum(fc(S) * ln fc(S))
@@ -74,12 +74,27 @@ def attribue_entropy (my_data_frame, attr):
             num_of_elem_in_set = len(my_data_frame[attr][my_data_frame[attr]==variable]) # |S|
             frequency = num_of_elem_in_set_attr/(num_of_elem_in_set + epsilon) #  |Sj| / |S| ; adding epsilon to prevent division by zero
             entropy += -frequency*log(frequency + epsilon)  # calculates entropy for one value of attribute
+
         fraction2 = num_of_elem_in_set/len(my_data_frame)
         attr_entropy += -fraction2*entropy # calculates entropy of data set after it was divided for subsets
         abs_attr_entropy = abs(attr_entropy)
+
     return abs_attr_entropy
 
-for key in dane_test.keys():
-    print(key, attribue_entropy(dane_test, key))
+# for key in dane_test.keys():
+#     print(key, attribue_entropy(dane_test, key))
 
-print(attribue_entropy(dane_test, 'Atr18'))
+#print(attribue_entropy(dane_test, 'Atr18'))
+
+
+# function compytes information gain and finds max value
+# podr str 77: InfGain(D,S) = I(S) - Inf(D,S)
+def max_inf_gain(my_data_frame):
+    inf_gain = []
+
+    for key in my_data_frame.keys()[:-1]:
+        inf_gain.append(entropy(my_data_frame)-attribue_entropy(my_data_frame,key))
+    return my_data_frame.keys()[:-1][np.argmax(inf_gain)]
+
+print(entropy(dane_test)-attribue_entropy(dane_test,'Atr18'))
+print(max_inf_gain(dane_test))
