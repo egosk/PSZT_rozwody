@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from numpy import log
 
-#small value used to prevent division by 0 and log(0)
+# small value used to prevent division by 0 and log(0)
 epsilon = np.finfo(float).eps
 
 dane = []
@@ -106,5 +106,40 @@ def get_subtable(my_data_frame, attr, attr_value):
     return my_data_frame[my_data_frame[attr] == attr_value].reset_index(drop=True)
 
 
-st = get_subtable(dane_test,'Atr1', '1')
-print(st)
+#st = get_subtable(dane_test,'Atr1', '1')
+#print(st)
+
+# function where we build tree
+def id3_tree(my_data_frame, tree=None):
+    classes = my_data_frame.keys()[-1]  # last column in data set contains classes
+
+    # Find attribute with max inf_gain
+    # and put it in tree node
+    tree_node = max_inf_gain(my_data_frame)
+
+    possible_attValues = np.unique(my_data_frame[tree_node])  # unique values for attribute in node
+
+    # to build tree we use dictionaries
+    # create empty tree
+    if tree is None:
+        tree = {}
+        tree[tree_node] = {}
+
+
+    # here we check all possible values for attribute and use recursion to develop the tree
+    for value in possible_attValues:
+
+        subtable = get_subtable(my_data_frame, tree_node, value)
+
+        # np.unique returns (unique_values, number_of_times_each_of_the_unique_values_comes_up_in_the_original_array)
+        class_values, counter = np.unique(subtable[classes], return_counts=True)
+
+        if len(counter) == 1:
+            tree[tree_node][value] = class_values[0] # if class value comes up only once it is tree leaf
+        else:
+            tree[tree_node][value] = id3_tree(subtable)  # recursion here
+
+    return tree
+
+tr = id3_tree(dane_test)
+print(tr)
