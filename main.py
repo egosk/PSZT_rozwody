@@ -96,5 +96,15 @@ def max_inf_gain(my_data_frame):
         inf_gain.append(entropy(my_data_frame)-attribue_entropy(my_data_frame,key))
     return my_data_frame.keys()[:-1][np.argmax(inf_gain)]
 
-print(entropy(dane_test)-attribue_entropy(dane_test,'Atr18'))
+# print(entropy(dane_test)-attribue_entropy(dane_test,'Atr18'))
 print(max_inf_gain(dane_test))
+
+# function returns subtable
+# where attribute attr has value attr_value
+
+def get_subtable(my_data_frame, attr, attr_value):
+    return my_data_frame[my_data_frame[attr] == attr_value].reset_index(drop=True)
+
+
+st = get_subtable(dane_test,'Atr1', '1')
+print(st)
