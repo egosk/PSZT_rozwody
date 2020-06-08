@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from numpy import log
+from sklearn.model_selection import KFold
 
 # small value used to prevent division by 0 and log(0)
 epsilon = np.finfo(float).eps
@@ -29,8 +30,62 @@ def data_import():
 dane_test = data_import()
 #print(dane_test)
 
-# function used to compute entropy of whole data set
-# w podreczniku I(S) str 76
+def k_cross_valid_data_sets(my_data_frame, k):
+    kfold = KFold(k, True, 1)
+    kf = kfold.split(my_data_frame)
+
+    # i = 0
+    # for train, test in kf:
+    #     print(i)
+    #     print('train: %s, test: %s' % (train, test))
+    #     i += 1
+
+    training_set_indexes = []
+    test_set_indexes = []
+
+    for train, test in kf:
+        training_set_indexes.append(train)
+        test_set_indexes.append(test)
+
+    train_dataframes =[]
+    test_dataframes =[]
+    for i in range(0, k):
+        test_dataframe = 0
+        test_dataframe = pd.DataFrame(my_data_frame.loc[test_set_indexes[i]])
+        test_dataframes.append(test_dataframe)
+
+        train_dataframe = 0
+        train_dataframe = pd.DataFrame(my_data_frame.loc[training_set_indexes[i]])
+        train_dataframes.append(train_dataframe)
+
+
+    # print(test_dataframes[0])
+    # print(train_dataframes[0])
+    return train_dataframes, test_dataframes
+
+train, test = k_cross_valid_data_sets(dane_test, 10)
+
+
+# print(training_set_indexes[0][2])
+# print(test_set_indexes[0])
+
+
+
+# test_data =  dane_test.loc[[1]]
+# print(test_data)
+
+
+
+
+#result = kfold.split(dane_test)
+
+#print(result)
+
+
+# for train_index, test_index in kfold.split(dane_test):
+#     print('TRAIN:', train_index, 'TEST:', test_index)
+#     X_train, X_test = X[train_index], X[test_index]
+#     y_train, y_test = y[train_index], y[test_index]
 
 def entropy(my_data_frame):
     entropy = 0
@@ -50,7 +105,7 @@ def entropy(my_data_frame):
     return entropy
 
 
-print(entropy(dane_test))
+# print(entropy(dane_test))
 
 # function computes entropy for provided attribute
 
@@ -97,7 +152,7 @@ def max_inf_gain(my_data_frame):
     return my_data_frame.keys()[:-1][np.argmax(inf_gain)]
 
 # print(entropy(dane_test)-attribue_entropy(dane_test,'Atr18'))
-print(max_inf_gain(dane_test))
+# print(max_inf_gain(dane_test))
 
 # function returns subtable
 # where attribute attr has value attr_value
@@ -142,4 +197,7 @@ def id3_tree(my_data_frame, tree=None):
     return tree
 
 tr = id3_tree(dane_test)
-print(tr)
+# print(tr)
+
+tr1 = id3_tree(train[0])
+print((tr1))
